@@ -15,10 +15,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import com.TestOptimize.GenericLib.FileLib;
+import com.TestOptimize.GenericLib.GenericLib;
 import com.TestOptimize.GenericLib.Utility;
 
 public class CreatePageAndElements 
@@ -32,6 +34,7 @@ public class CreatePageAndElements
 	public String excelPath = "./Excel/CreatePageAndElements.xlsx";
 	public String sheetName = "AddressSearch;ListViewControls";
 	public WebDriverWait wait;
+	public GenericLib lib = new GenericLib();
 
 	@BeforeClass
 	public void configBC() throws InterruptedException
@@ -39,8 +42,8 @@ public class CreatePageAndElements
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get(flib.getpropertykeyvalue("url"));
-		driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-		wait = new WebDriverWait(driver, 5);
+		driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+		wait = new WebDriverWait(driver, 20);
 		driver.findElement(By.name("username")).sendKeys(flib.getpropertykeyvalue("username"));
 		driver.findElement(By.name("password")).sendKeys(flib.getpropertykeyvalue("password"),Keys.ENTER);
 		util.selectByName(driver.findElement(By.id("userProject")),project_number );
@@ -67,6 +70,9 @@ public class CreatePageAndElements
 		}		
 		return data;
 	}
+	
+	
+	
 
 	//@Test(dataProvider = "getExcelDataForGivenPage")
 //	public void addingElements(String parentPage, String newPageName, String WebElementName, String type, 
@@ -78,6 +84,10 @@ public class CreatePageAndElements
 //	public void addingElements(String parentPage, String newPageName, String WebElementName, String type, 
 //			String locator1, String value1) throws Exception
 	{
+		String parentPage1 = parentPage;
+		String newPage1 = newPageName;
+		String webelementName1 = WebElementName;
+		String type1 = type;
 		
 		try
 		{
@@ -136,12 +146,12 @@ public class CreatePageAndElements
 
 		//		Thread.sleep(5000);
 		//right click on new page
+		
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='"+newPageName+"']")));
 		util.rightClick(driver, driver.findElement(By.xpath("//span[text()='"+newPageName+"']")));
-
-
+		Thread.sleep(1000);
 		//click on add AddWebElement option
-		//wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[contains(text(),'Element')]")));
-		Thread.sleep(1500);
 		Robot r = new Robot();
 		r.keyPress(KeyEvent.VK_CONTROL);
 		r.keyPress(KeyEvent.VK_X);
@@ -149,15 +159,21 @@ public class CreatePageAndElements
 		r.keyRelease(KeyEvent.VK_X);
 
 		//Enter Element Name
+		
+		
 		Thread.sleep(1500);
+		
+		
+		
 		driver.findElement(By.xpath("//label[contains(text(),'Element Name')]/..//input")).sendKeys(WebElementName);
 
 		//Select Element Type
 		Thread.sleep(1500);
-		WebElement SelectType = driver.findElement(By.xpath("//label[text()='Type']/..//select"));
-		util.selectByValue(SelectType, type);
-
+		/*WebElement SelectType = driver.findElement(By.xpath("//label[text()='Type']/..//select"));
+		util.selectByValue(SelectType, type);*/
 		//Add 2 locators and their values
+		System.out.println(type1);
+		lib.selectType(driver, type1);
 		for(int i=1;i<=2;i++)
 		{
 			if(i==1)
@@ -193,10 +209,16 @@ public class CreatePageAndElements
 				driver.findElement(By.xpath("//button[contains(text(),'Create & Close')]")).click();
 				System.out.println("Created Element -> "+WebElementName+" into "+newPageName+" Page");
 				//				Thread.sleep(1500);
-				driver.findElement(By.xpath("//div[contains(text(),'Successfully')]")).click();
-				driver.navigate().refresh();
+				//String alreadyExists = driver.findElement(By.xpath("//div[contains(text(),'Successfully')]")).getText();
+				//driver.navigate().refresh();
+				
+				
 			//}
 		}
+	}
+	@AfterClass
+	public void tearDown() {
+		driver.close();
 	}
 }
 //Commented from - make changes 72-73, 165, 167, 170-182, 190
